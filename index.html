@@ -1,0 +1,1581 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Laboratorio futurista de fisica con videos sobre Movimiento Curvilineo Irregular y Movimiento Rectilineo Variado.">
+    <title></title>
+
+    <style>
+        /* =========================
+           Reset, variables y base
+        ========================== */
+        :root {
+            --bg: #02040c;
+            --panel: rgba(8, 21, 42, .58);
+            --panel-strong: rgba(10, 32, 58, .76);
+            --cyan: #35e7ff;
+            --blue: #3c7bff;
+            --violet: #9d6cff;
+            --mint: #76ffd6;
+            --text: #eef8ff;
+            --muted: #a8bed4;
+            --line: rgba(76, 224, 255, .28);
+            --shadow: 0 24px 80px rgba(0, 217, 255, .16);
+            --radius: 22px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: var(--text);
+            font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+            background:
+                radial-gradient(circle at 16% 18%, rgba(53, 231, 255, .18), transparent 27%),
+                radial-gradient(circle at 80% 6%, rgba(157, 108, 255, .14), transparent 25%),
+                radial-gradient(circle at 50% 100%, rgba(24, 91, 255, .18), transparent 34%),
+                linear-gradient(135deg, #01030a 0%, #061225 48%, #02040c 100%);
+            cursor: none;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: -5;
+            background-image:
+                linear-gradient(rgba(84, 232, 255, .035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(84, 232, 255, .035) 1px, transparent 1px);
+            background-size: 58px 58px;
+            mask-image: radial-gradient(circle at center, #000 20%, transparent 82%);
+        }
+
+        a,
+        button,
+        video {
+            cursor: none;
+        }
+
+        ::selection {
+            color: #00101d;
+            background: var(--cyan);
+        }
+
+        /* =========================
+           Loader futurista
+        ========================== */
+        .loader {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: grid;
+            place-items: center;
+            background: radial-gradient(circle, #07152c 0%, #01030a 64%);
+            transition: opacity .7s ease, visibility .7s ease;
+        }
+
+        .loader.is-hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader-core {
+            position: relative;
+            width: 132px;
+            height: 132px;
+            border: 1px solid rgba(53, 231, 255, .35);
+            border-radius: 50%;
+            box-shadow: 0 0 32px rgba(53, 231, 255, .36), inset 0 0 30px rgba(60, 123, 255, .22);
+            animation: rotateCore 2.8s linear infinite;
+        }
+
+        .loader-core::before,
+        .loader-core::after {
+            content: "";
+            position: absolute;
+            inset: 18px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            border-top-color: var(--cyan);
+            border-right-color: var(--violet);
+            filter: drop-shadow(0 0 12px var(--cyan));
+        }
+
+        .loader-core::after {
+            inset: 40px;
+            border-top-color: var(--mint);
+            animation: rotateCore 1.4s linear infinite reverse;
+        }
+
+        .loader-text {
+            position: absolute;
+            margin-top: 190px;
+            color: var(--muted);
+            font-size: .78rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        @keyframes rotateCore {
+            to { transform: rotate(360deg); }
+        }
+
+        /* =========================
+           Cursor y progreso
+        ========================== */
+        .cursor-dot,
+        .cursor-ring {
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 10000;
+            pointer-events: none;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .cursor-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--cyan);
+            box-shadow: 0 0 18px var(--cyan);
+        }
+
+        .cursor-ring {
+            width: 36px;
+            height: 36px;
+            border: 1px solid rgba(53, 231, 255, .75);
+            transition: width .18s ease, height .18s ease, border-color .18s ease;
+        }
+
+        .cursor-ring.is-active {
+            width: 58px;
+            height: 58px;
+            border-color: rgba(118, 255, 214, .9);
+        }
+
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 8000;
+            width: 0%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--cyan), var(--blue), var(--violet));
+            box-shadow: 0 0 22px rgba(53, 231, 255, .9);
+        }
+
+        /* =========================
+           Fondo animado: espacio, atomos y energia
+        ========================== */
+        .cosmos {
+            position: fixed;
+            inset: 0;
+            z-index: -4;
+            overflow: hidden;
+        }
+
+        #particle-field {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .energy-lines {
+            position: absolute;
+            inset: -20%;
+            opacity: .42;
+            background:
+                linear-gradient(115deg, transparent 0 41%, rgba(53, 231, 255, .16) 42%, transparent 44% 100%),
+                linear-gradient(62deg, transparent 0 54%, rgba(118, 255, 214, .11) 55%, transparent 57% 100%);
+            background-size: 360px 360px, 520px 520px;
+            animation: energyDrift 13s linear infinite;
+        }
+
+        .nebula {
+            position: absolute;
+            width: 44vw;
+            height: 44vw;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: .27;
+            animation: nebulaPulse 8s ease-in-out infinite alternate;
+        }
+
+        .nebula.one {
+            left: -12vw;
+            top: 14vh;
+            background: #00d9ff;
+        }
+
+        .nebula.two {
+            right: -14vw;
+            bottom: -8vh;
+            background: #815cff;
+            animation-delay: -2s;
+        }
+
+        @keyframes energyDrift {
+            to { transform: translate3d(160px, 90px, 0); }
+        }
+
+        @keyframes nebulaPulse {
+            to { transform: scale(1.18) translateY(-18px); opacity: .38; }
+        }
+
+        /* =========================
+           Layout principal
+        ========================== */
+        .site-shell {
+            position: relative;
+            z-index: 2;
+        }
+
+        .nav {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            width: min(1180px, calc(100% - 32px));
+            margin: 18px auto 0;
+            padding: 14px 18px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            background: rgba(3, 12, 27, .58);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(18px);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: max-content;
+            color: var(--text);
+            font-weight: 800;
+            letter-spacing: .5px;
+            text-decoration: none;
+        }
+
+        .brand-mark {
+            display: grid;
+            place-items: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            color: #03101a;
+            background: linear-gradient(135deg, var(--cyan), var(--mint));
+            box-shadow: 0 0 24px rgba(53, 231, 255, .58);
+        }
+
+        .brand-logo {
+            position: relative;
+            display: grid;
+            place-items: center;
+            width: 48px;
+            height: 48px;
+            border: 1px solid rgba(53, 231, 255, .42);
+            border-radius: 50%;
+            background: linear-gradient(145deg, rgba(53, 231, 255, .16), rgba(157, 108, 255, .1));
+            box-shadow: 0 0 26px rgba(53, 231, 255, .34), inset 0 0 18px rgba(53, 231, 255, .12);
+            overflow: hidden;
+            animation: logoFloat 4.6s ease-in-out infinite;
+        }
+
+        .brand-logo::after,
+        .institution-logo::after,
+        .footer-logo-wrap::after {
+            content: "";
+            position: absolute;
+            inset: -35%;
+            background: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, .55), transparent 62%);
+            transform: translateX(-70%) rotate(12deg);
+            animation: hologramSweep 4.8s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .brand-logo img,
+        .institution-logo img,
+        .footer-logo-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: inherit;
+            filter: saturate(1.12) contrast(1.04);
+        }
+
+        .brand-copy {
+            display: grid;
+            gap: 2px;
+        }
+
+        .brand-copy strong {
+            color: var(--text);
+            font-size: .94rem;
+            line-height: 1.1;
+        }
+
+        .brand-copy span {
+            color: var(--cyan);
+            font-size: .66rem;
+            font-weight: 800;
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-links a {
+            padding: 10px 14px;
+            border-radius: 999px;
+            color: var(--muted);
+            font-size: .92rem;
+            text-decoration: none;
+            transition: color .2s ease, background .2s ease, box-shadow .2s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--text);
+            background: rgba(53, 231, 255, .12);
+            box-shadow: inset 0 0 18px rgba(53, 231, 255, .15);
+        }
+
+        .hero {
+            min-height: 86vh;
+            display: grid;
+            align-items: center;
+            width: min(1180px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 86px 0 72px;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.04fr .96fr;
+            gap: 46px;
+            align-items: center;
+        }
+
+        .institution-banner {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            width: fit-content;
+            max-width: 100%;
+            margin-bottom: 22px;
+            padding: 14px 18px 14px 14px;
+            border: 1px solid rgba(53, 231, 255, .34);
+            border-radius: 24px;
+            background: linear-gradient(135deg, rgba(6, 23, 46, .78), rgba(10, 38, 68, .48));
+            box-shadow: 0 18px 58px rgba(0, 217, 255, .16), inset 0 0 28px rgba(53, 231, 255, .08);
+            backdrop-filter: blur(18px);
+            overflow: hidden;
+        }
+
+        .institution-banner::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(90deg, rgba(53, 231, 255, .18), transparent 32% 68%, rgba(118, 255, 214, .12)),
+                linear-gradient(180deg, rgba(255, 255, 255, .08), transparent);
+            opacity: .68;
+            pointer-events: none;
+        }
+
+        .institution-logo {
+            position: relative;
+            flex: 0 0 auto;
+            display: grid;
+            place-items: center;
+            width: 82px;
+            height: 82px;
+            padding: 4px;
+            border: 1px solid rgba(118, 255, 214, .5);
+            border-radius: 22px;
+            background: rgba(2, 8, 20, .62);
+            box-shadow: 0 0 34px rgba(53, 231, 255, .42), 0 0 70px rgba(60, 123, 255, .16);
+            animation: logoFloat 4.6s ease-in-out infinite;
+            overflow: hidden;
+        }
+
+        .institution-copy {
+            position: relative;
+            display: grid;
+            gap: 5px;
+        }
+
+        .institution-copy span {
+            color: var(--mint);
+            font-size: .72rem;
+            font-weight: 900;
+            letter-spacing: 2.4px;
+            text-transform: uppercase;
+        }
+
+        .institution-copy strong {
+            display: block;
+            max-width: 560px;
+            color: transparent;
+            background: linear-gradient(90deg, #fff, var(--cyan), var(--mint));
+            background-size: 180% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            font-size: clamp(1rem, 2.4vw, 1.55rem);
+            line-height: 1.16;
+            text-transform: uppercase;
+            animation: holoText 5s ease-in-out infinite;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            width: fit-content;
+            padding: 9px 13px;
+            border: 1px solid rgba(53, 231, 255, .32);
+            border-radius: 999px;
+            color: var(--cyan);
+            background: rgba(53, 231, 255, .08);
+            box-shadow: inset 0 0 24px rgba(53, 231, 255, .08);
+            font-size: .76rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--mint);
+            box-shadow: 0 0 14px var(--mint);
+            animation: pulseDot 1.6s ease-in-out infinite;
+        }
+
+        .hero h1 {
+            max-width: 920px;
+            margin-top: 22px;
+            font-size: clamp(3.1rem, 8vw, 7.4rem);
+            line-height: .88;
+            letter-spacing: 0;
+        }
+
+        .hero h1 span {
+            display: block;
+            color: transparent;
+            background: linear-gradient(90deg, #fff, var(--cyan), var(--mint), #fff);
+            background-size: 240% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            filter: drop-shadow(0 0 18px rgba(53, 231, 255, .24));
+            animation: holoText 5s ease-in-out infinite;
+        }
+
+        .hero-copy {
+            max-width: 690px;
+            margin-top: 26px;
+            color: var(--muted);
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            line-height: 1.8;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-top: 34px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            min-height: 48px;
+            padding: 0 18px;
+            border: 1px solid rgba(53, 231, 255, .45);
+            border-radius: 999px;
+            color: var(--text);
+            background: rgba(53, 231, 255, .08);
+            box-shadow: 0 0 26px rgba(53, 231, 255, .13);
+            font-weight: 800;
+            text-decoration: none;
+            transition: transform .25s ease, box-shadow .25s ease, background .25s ease;
+        }
+
+        .btn.primary {
+            color: #03101a;
+            border-color: transparent;
+            background: linear-gradient(135deg, var(--cyan), var(--mint));
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 38px rgba(53, 231, 255, .28);
+        }
+
+        .lab-orbit {
+            position: relative;
+            aspect-ratio: 1;
+            min-height: 440px;
+            border: 1px solid rgba(53, 231, 255, .2);
+            border-radius: 50%;
+            background:
+                radial-gradient(circle, rgba(53, 231, 255, .2), transparent 12%),
+                radial-gradient(circle, rgba(255, 255, 255, .08), transparent 38%),
+                rgba(5, 18, 38, .2);
+            box-shadow: inset 0 0 70px rgba(53, 231, 255, .1), 0 0 90px rgba(53, 231, 255, .1);
+            transform-style: preserve-3d;
+            animation: floatLab 7s ease-in-out infinite;
+        }
+
+        .orbit-ring,
+        .orbit-ring::before,
+        .orbit-ring::after {
+            position: absolute;
+            inset: 18%;
+            content: "";
+            border: 1px solid rgba(53, 231, 255, .42);
+            border-radius: 50%;
+            box-shadow: 0 0 26px rgba(53, 231, 255, .18);
+        }
+
+        .orbit-ring {
+            transform: rotateX(70deg) rotateZ(8deg);
+            animation: orbitSpin 8s linear infinite;
+        }
+
+        .orbit-ring::before {
+            inset: -18%;
+            transform: rotateZ(64deg);
+            border-color: rgba(118, 255, 214, .34);
+        }
+
+        .orbit-ring::after {
+            inset: 20%;
+            transform: rotateZ(-38deg);
+            border-color: rgba(157, 108, 255, .36);
+        }
+
+        .nucleus {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 98px;
+            height: 98px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle at 34% 28%, #fff, var(--cyan) 28%, #1453ff 72%);
+            box-shadow: 0 0 55px rgba(53, 231, 255, .8);
+        }
+
+        .electron {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--mint);
+            box-shadow: 0 0 20px var(--mint);
+            animation: electronMove 4.5s linear infinite;
+        }
+
+        .electron.two {
+            animation-duration: 6.4s;
+            animation-delay: -2s;
+            background: var(--cyan);
+        }
+
+        .electron.three {
+            animation-duration: 7.8s;
+            animation-delay: -4s;
+            background: var(--violet);
+        }
+
+        .data-chip {
+            position: absolute;
+            display: grid;
+            gap: 4px;
+            padding: 14px 16px;
+            border: 1px solid rgba(53, 231, 255, .32);
+            border-radius: 16px;
+            background: rgba(4, 18, 35, .64);
+            backdrop-filter: blur(14px);
+            box-shadow: 0 18px 48px rgba(0, 0, 0, .24);
+        }
+
+        .data-chip strong {
+            color: var(--cyan);
+            font-size: 1.1rem;
+        }
+
+        .data-chip span {
+            color: var(--muted);
+            font-size: .78rem;
+            text-transform: uppercase;
+            letter-spacing: 1.4px;
+        }
+
+        .data-chip.one { left: 2%; top: 18%; }
+        .data-chip.two { right: 1%; top: 60%; }
+        .data-chip.three { left: 16%; bottom: 10%; }
+
+        @keyframes pulseDot {
+            50% { transform: scale(1.7); opacity: .55; }
+        }
+
+        @keyframes holoText {
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes logoFloat {
+            50% {
+                transform: translateY(-7px);
+                box-shadow: 0 0 38px rgba(53, 231, 255, .58), 0 0 86px rgba(118, 255, 214, .18);
+            }
+        }
+
+        @keyframes hologramSweep {
+            48%, 100% { transform: translateX(120%) rotate(12deg); }
+        }
+
+        @keyframes floatLab {
+            50% { transform: translateY(-18px) rotateX(2deg) rotateY(-4deg); }
+        }
+
+        @keyframes orbitSpin {
+            to { transform: rotateX(70deg) rotateZ(368deg); }
+        }
+
+        @keyframes electronMove {
+            from { transform: rotate(0deg) translateX(170px) rotate(0deg); }
+            to { transform: rotate(360deg) translateX(170px) rotate(-360deg); }
+        }
+
+        /* =========================
+           Secciones, tarjetas y contenido
+        ========================== */
+        .section {
+            width: min(1180px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 86px 0;
+        }
+
+        .section-head {
+            max-width: 820px;
+            margin-bottom: 34px;
+        }
+
+        .section-kicker {
+            color: var(--mint);
+            font-size: .8rem;
+            font-weight: 800;
+            letter-spacing: 2.2px;
+            text-transform: uppercase;
+        }
+
+        .section h2 {
+            margin-top: 10px;
+            font-size: clamp(2rem, 4vw, 3.7rem);
+            line-height: 1.05;
+            letter-spacing: 0;
+        }
+
+        .section-head p {
+            margin-top: 16px;
+            color: var(--muted);
+            font-size: 1.05rem;
+            line-height: 1.75;
+        }
+
+        .topic-grid,
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 24px;
+        }
+
+        .glass-card {
+            position: relative;
+            overflow: hidden;
+            min-height: 100%;
+            padding: 26px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: linear-gradient(145deg, rgba(9, 30, 56, .72), rgba(3, 12, 28, .48));
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(18px);
+            transform: translateY(22px);
+            opacity: 0;
+            transition: opacity .75s ease, transform .75s ease, border-color .25s ease, box-shadow .25s ease;
+        }
+
+        .glass-card.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .glass-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background:
+                linear-gradient(120deg, transparent 0 32%, rgba(53, 231, 255, .18), transparent 52%),
+                radial-gradient(circle at var(--mx, 50%) var(--my, 20%), rgba(53, 231, 255, .2), transparent 26%);
+            opacity: .55;
+            transform: translateX(-30%);
+            transition: opacity .25s ease;
+            animation: scanCard 6s linear infinite;
+        }
+
+        .glass-card:hover {
+            border-color: rgba(118, 255, 214, .52);
+            box-shadow: 0 30px 90px rgba(0, 217, 255, .22);
+        }
+
+        .icon-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+
+        .sci-icon {
+            display: grid;
+            place-items: center;
+            width: 52px;
+            height: 52px;
+            border: 1px solid rgba(53, 231, 255, .4);
+            border-radius: 16px;
+            color: var(--cyan);
+            background: rgba(53, 231, 255, .08);
+            box-shadow: inset 0 0 20px rgba(53, 231, 255, .12), 0 0 28px rgba(53, 231, 255, .15);
+        }
+
+        .tag {
+            padding: 8px 11px;
+            border: 1px solid rgba(118, 255, 214, .28);
+            border-radius: 999px;
+            color: var(--mint);
+            background: rgba(118, 255, 214, .07);
+            font-size: .78rem;
+            font-weight: 800;
+            letter-spacing: 1.3px;
+            text-transform: uppercase;
+        }
+
+        .glass-card h3 {
+            position: relative;
+            font-size: clamp(1.35rem, 2.4vw, 2rem);
+            line-height: 1.18;
+        }
+
+        .glass-card p,
+        .glass-card li {
+            position: relative;
+            color: var(--muted);
+            line-height: 1.75;
+        }
+
+        .glass-card p {
+            margin-top: 16px;
+        }
+
+        .metric-list {
+            position: relative;
+            display: grid;
+            gap: 10px;
+            margin-top: 20px;
+            list-style: none;
+        }
+
+        .metric-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .metric-list li::before {
+            content: "";
+            flex: 0 0 auto;
+            width: 9px;
+            height: 9px;
+            margin-top: 10px;
+            border-radius: 50%;
+            background: var(--cyan);
+            box-shadow: 0 0 14px var(--cyan);
+        }
+
+        @keyframes scanCard {
+            50% { transform: translateX(12%); }
+            100% { transform: translateX(30%); }
+        }
+
+        /* =========================
+           Formulas animadas
+        ========================== */
+        .formula-lab {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .formula {
+            position: relative;
+            min-height: 150px;
+            padding: 22px;
+            border: 1px solid rgba(53, 231, 255, .28);
+            border-radius: 20px;
+            background: rgba(4, 16, 34, .66);
+            overflow: hidden;
+            box-shadow: inset 0 0 28px rgba(53, 231, 255, .08);
+        }
+
+        .formula::after {
+            content: "";
+            position: absolute;
+            left: -40%;
+            top: 0;
+            width: 40%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(53, 231, 255, .18), transparent);
+            animation: formulaSweep 3.7s ease-in-out infinite;
+        }
+
+        .formula code {
+            position: relative;
+            display: block;
+            color: var(--cyan);
+            font-family: Consolas, "Courier New", monospace;
+            font-size: clamp(1.45rem, 3vw, 2.25rem);
+            font-weight: 800;
+            text-shadow: 0 0 16px rgba(53, 231, 255, .55);
+        }
+
+        .formula span {
+            position: relative;
+            display: block;
+            margin-top: 13px;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        @keyframes formulaSweep {
+            45%, 100% { left: 112%; }
+        }
+
+        /* =========================
+           Videos premium
+        ========================== */
+        .video-card {
+            padding: 0;
+        }
+
+        .video-header {
+            position: relative;
+            padding: 24px 24px 18px;
+            border-bottom: 1px solid rgba(53, 231, 255, .18);
+        }
+
+        .video-header h3 {
+            margin-top: 10px;
+        }
+
+        .video-frame {
+            position: relative;
+            margin: 22px;
+            border: 1px solid rgba(53, 231, 255, .48);
+            border-radius: 20px;
+            background: #020814;
+            box-shadow: 0 0 42px rgba(53, 231, 255, .26), inset 0 0 34px rgba(53, 231, 255, .1);
+            overflow: hidden;
+        }
+
+        .video-frame::before,
+        .video-frame::after {
+            content: "";
+            position: absolute;
+            z-index: 2;
+            width: 58px;
+            height: 58px;
+            pointer-events: none;
+            border-color: var(--cyan);
+            filter: drop-shadow(0 0 10px var(--cyan));
+        }
+
+        .video-frame::before {
+            left: 10px;
+            top: 10px;
+            border-left: 2px solid;
+            border-top: 2px solid;
+        }
+
+        .video-frame::after {
+            right: 10px;
+            bottom: 10px;
+            border-right: 2px solid;
+            border-bottom: 2px solid;
+        }
+
+        .video-frame video {
+            display: block;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+            background: #000;
+        }
+
+        .video-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 0 22px 24px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .icon-btn {
+            display: inline-grid;
+            place-items: center;
+            width: 44px;
+            height: 44px;
+            border: 1px solid rgba(53, 231, 255, .38);
+            border-radius: 50%;
+            color: var(--cyan);
+            background: rgba(53, 231, 255, .08);
+            box-shadow: inset 0 0 18px rgba(53, 231, 255, .08);
+            transition: transform .2s ease, background .2s ease, box-shadow .2s ease;
+        }
+
+        .icon-btn:hover {
+            transform: translateY(-3px) scale(1.04);
+            background: rgba(53, 231, 255, .16);
+            box-shadow: 0 0 24px rgba(53, 231, 255, .28);
+        }
+
+        .status-pill {
+            color: var(--muted);
+            font-size: .86rem;
+        }
+
+        /* =========================
+           Footer
+        ========================== */
+        .footer {
+            width: min(1180px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 42px 0 52px;
+            border-top: 1px solid rgba(53, 231, 255, .18);
+            color: var(--muted);
+            text-align: center;
+        }
+
+        .footer-inner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+        }
+
+        .footer-logo-wrap {
+            position: relative;
+            flex: 0 0 auto;
+            width: 42px;
+            height: 42px;
+            border: 1px solid rgba(53, 231, 255, .36);
+            border-radius: 50%;
+            background: rgba(4, 16, 34, .7);
+            box-shadow: 0 0 24px rgba(53, 231, 255, .28);
+            overflow: hidden;
+        }
+
+        .footer strong {
+            color: var(--cyan);
+        }
+
+        /* =========================
+           Responsive
+        ========================== */
+        @media (max-width: 920px) {
+            body {
+                cursor: auto;
+            }
+
+            a,
+            button,
+            video {
+                cursor: pointer;
+            }
+
+            .cursor-dot,
+            .cursor-ring {
+                display: none;
+            }
+
+            .nav {
+                align-items: flex-start;
+                border-radius: 24px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero-grid,
+            .topic-grid,
+            .video-grid,
+            .formula-lab {
+                grid-template-columns: 1fr;
+            }
+
+            .hero {
+                min-height: auto;
+                padding-top: 58px;
+            }
+
+            .lab-orbit {
+                min-height: 330px;
+            }
+
+            .institution-banner {
+                width: 100%;
+            }
+
+            @keyframes electronMove {
+                from { transform: rotate(0deg) translateX(120px) rotate(0deg); }
+                to { transform: rotate(360deg) translateX(120px) rotate(-360deg); }
+            }
+        }
+
+        @media (max-width: 560px) {
+            .nav,
+            .hero,
+            .section,
+            .footer {
+                width: min(100% - 22px, 1180px);
+            }
+
+            .brand span:last-child {
+                display: none;
+            }
+
+            .brand-copy {
+                display: none;
+            }
+
+            .institution-banner {
+                align-items: flex-start;
+                border-radius: 20px;
+                padding: 12px;
+            }
+
+            .institution-logo {
+                width: 64px;
+                height: 64px;
+                border-radius: 18px;
+            }
+
+            .hero h1 {
+                font-size: 3.2rem;
+            }
+
+            .hero-actions,
+            .video-controls {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .glass-card,
+            .video-header {
+                padding: 20px;
+            }
+
+            .video-frame {
+                margin: 16px;
+                border-radius: 16px;
+            }
+
+            .footer-inner {
+                flex-direction: column;
+            }
+
+            .data-chip {
+                padding: 10px 12px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                animation-duration: .01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: .01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loader de entrada -->
+    <div class="loader" id="loader" aria-hidden="true">
+        <div class="loader-core"></div>
+        <div class="loader-text">Inicializando laboratorio</div>
+    </div>
+
+    <!-- Cursor personalizado y barra de progreso -->
+    <div class="cursor-dot" id="cursorDot"></div>
+    <div class="cursor-ring" id="cursorRing"></div>
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <!-- Fondo dinamico de espacio, particulas y energia -->
+    <div class="cosmos" aria-hidden="true">
+        <canvas id="particle-field"></canvas>
+        <div class="energy-lines"></div>
+        <div class="nebula one"></div>
+        <div class="nebula two"></div>
+    </div>
+
+    <main class="site-shell">
+        <!-- Navegacion glassmorphism -->
+        <nav class="nav reveal">
+            <a class="brand" href="#inicio" aria-label="Ir al inicio">
+                                    <span class="brand-logo">
+                        <img src="logo1.png" alt="Logo del colegio Juana Azurduy de Padilla Secundaria">
+                    </span>
+                                <span class="brand-copy">
+                    <strong>Quantum Motion Lab</strong>
+                    <span>Juana Azurduy</span>
+                </span>
+            </a>
+            <div class="nav-links" aria-label="Navegacion principal">
+                <a href="#teoria">Teoria</a>
+                <a href="#formulas">Formulas</a>
+                <a href="#videos">Videos</a>
+            </div>
+        </nav>
+
+        <!-- Hero principal con simulacion atomica -->
+        <section class="hero" id="inicio">
+            <div class="hero-grid">
+                <div class="hero-content reveal">
+                    <div class="institution-banner">
+                                                    <div class="institution-logo">
+                                <img src="logo1.png" alt="Escudo del colegio Juana Azurduy de Padilla Secundaria">
+                            </div>
+                                                <div class="institution-copy">
+                            <span>Unidad educativa</span>
+                            <strong>Juana Azurduy de Padilla Secundaria</strong>
+                        </div>
+                    </div>
+                    <div class="eyebrow"><span class="pulse-dot"></span>Estudiante: ROSABEL</div>
+                    <h1>Fisica del <span>movimiento</span></h1>
+                    <p class="hero-copy">
+                        Una experiencia visual de alto nivel para estudiar trayectorias no uniformes,
+                        aceleracion variable, energia cinetica y modelos de movimiento con una estetica
+                        inspirada en laboratorios orbitales, hologramas y simulaciones de particulas.
+                    </p>
+                    <div class="hero-actions">
+                        <a class="btn primary" href="#videos">Ver videos</a>
+                        <a class="btn" href="#teoria">Explorar conceptos</a>
+                    </div>
+                </div>
+
+                <div class="lab-orbit reveal parallax" data-depth="16" aria-label="Simulacion visual de atomo">
+                    <div class="orbit-ring"></div>
+                    <div class="nucleus"></div>
+                    <div class="electron"></div>
+                    <div class="electron two"></div>
+                    <div class="electron three"></div>
+                    <div class="data-chip one"><strong>v(t)</strong><span>Velocidad</span></div>
+                    <div class="data-chip two"><strong>a != 0</strong><span>Aceleracion</span></div>
+                    <div class="data-chip three"><strong>r(t)</strong><span>Trayectoria</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Explicaciones profesionales -->
+        <section class="section" id="teoria">
+            <div class="section-head reveal">
+                <div class="section-kicker">Analisis fisico</div>
+                <h2>Dos modelos esenciales para comprender el cambio de posicion.</h2>
+                <p>
+                    El movimiento se interpreta a partir de la posicion, la velocidad y la aceleracion.
+                    Cuando estas magnitudes cambian, revelan la estructura dinamica del fenomeno.
+                </p>
+            </div>
+
+            <div class="topic-grid">
+                <article class="glass-card reveal tilt-card">
+                    <div class="icon-row">
+                        <div class="sci-icon">∿</div>
+                        <span class="tag">Trayectoria curva</span>
+                    </div>
+                    <h3>Movimiento Curvilineo Irregular</h3>
+                    <p>
+                        Describe el desplazamiento de un cuerpo sobre una trayectoria curva cuya rapidez
+                        o direccion cambia de forma no constante. La velocidad siempre es tangente a la
+                        curva, mientras que la aceleracion puede dividirse en componentes tangencial y normal.
+                    </p>
+                    <ul class="metric-list">
+                        <li>La aceleracion tangencial modifica la rapidez del cuerpo.</li>
+                        <li>La aceleracion normal cambia la direccion de la velocidad.</li>
+                        <li>Su estudio permite analizar orbitas, proyectiles, curvas de carretera y sistemas rotatorios reales.</li>
+                    </ul>
+                </article>
+
+                <article class="glass-card reveal tilt-card">
+                    <div class="icon-row">
+                        <div class="sci-icon">⇄</div>
+                        <span class="tag">Linea recta</span>
+                    </div>
+                    <h3>Movimiento Rectilineo Variado</h3>
+                    <p>
+                        Ocurre cuando un cuerpo se desplaza sobre una linea recta con velocidad cambiante.
+                        Si la aceleracion es constante, las ecuaciones cinematicas permiten predecir posicion,
+                        velocidad y tiempo con precision experimental.
+                    </p>
+                    <ul class="metric-list">
+                        <li>La aceleracion positiva incrementa la rapidez en el sentido del movimiento.</li>
+                        <li>La aceleracion negativa produce frenado o cambio de sentido.</li>
+                        <li>Es la base para estudiar caida libre, vehiculos, trenes y ensayos de laboratorio.</li>
+                    </ul>
+                </article>
+            </div>
+        </section>
+
+        <!-- Formulas visuales animadas -->
+        <section class="section" id="formulas">
+            <div class="section-head reveal">
+                <div class="section-kicker">Hologramas matematicos</div>
+                <h2>Formulas clave para leer el movimiento como datos.</h2>
+            </div>
+
+            <div class="formula-lab">
+                <div class="formula reveal">
+                    <code>v = dx / dt</code>
+                    <span>La velocidad instantanea mide como cambia la posicion en el tiempo.</span>
+                </div>
+                <div class="formula reveal">
+                    <code>a = dv / dt</code>
+                    <span>La aceleracion expresa la variacion temporal de la velocidad.</span>
+                </div>
+                <div class="formula reveal">
+                    <code>x = x0 + v0t + 1/2 at²</code>
+                    <span>Modelo rectilineo con aceleracion constante para predecir posicion.</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reproductores modernos con videos locales -->
+        <section class="section" id="videos">
+            <div class="section-head reveal">
+                <div class="section-kicker">Modulo audiovisual</div>
+                <h2>Videos locales integrados en un marco futurista.</h2>
+                <p>
+                    Los reproductores mantienen controles nativos para compatibilidad con hosting gratuito,
+                    y agregan controles personalizados para reproducir, pausar, silenciar y reiniciar.
+                </p>
+            </div>
+
+            <div class="video-grid">
+                <article class="glass-card video-card reveal tilt-card">
+                    <div class="video-header">
+                        <span class="tag">Video 01</span>
+                        <h3>Movimiento Curvilineo Irregular</h3>
+                    </div>
+                    <div class="video-frame">
+                        <video preload="metadata" muted playsinline controls poster="">
+                            <source src="video1.mp4" type="video/mp4">
+                            Tu navegador no soporta video HTML5.
+                        </video>
+                    </div>
+                    <div class="video-controls">
+                        <div class="control-group">
+                            <button class="icon-btn play-btn" type="button" aria-label="Reproducir o pausar video">▶</button>
+                            <button class="icon-btn mute-btn" type="button" aria-label="Activar o silenciar video">◌</button>
+                            <button class="icon-btn reset-btn" type="button" aria-label="Reiniciar video">↺</button>
+                        </div>
+                        <span class="status-pill">Autoplay silencioso disponible al iniciar</span>
+                    </div>
+                </article>
+
+                <article class="glass-card video-card reveal tilt-card">
+                    <div class="video-header">
+                        <span class="tag">Video 02</span>
+                        <h3>Movimiento Rectilineo Variado</h3>
+                    </div>
+                    <div class="video-frame">
+                        <video preload="metadata" muted playsinline controls poster="">
+                            <source src="video2.mp4" type="video/mp4">
+                            Tu navegador no soporta video HTML5.
+                        </video>
+                    </div>
+                    <div class="video-controls">
+                        <div class="control-group">
+                            <button class="icon-btn play-btn" type="button" aria-label="Reproducir o pausar video">▶</button>
+                            <button class="icon-btn mute-btn" type="button" aria-label="Activar o silenciar video">◌</button>
+                            <button class="icon-btn reset-btn" type="button" aria-label="Reiniciar video">↺</button>
+                        </div>
+                        <span class="status-pill">Modo laboratorio visual activo</span>
+                    </div>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <!-- Pie de pagina -->
+    <footer class="footer">
+        <div class="footer-inner">
+                            <span class="footer-logo-wrap">
+                    <img src="logo1.png" alt="Logo del colegio">
+                </span>
+                        <p><strong>Quantum Motion Lab</strong> © 2026 · Juana Azurduy de Padilla Secundaria · Proyecto de fisica para InfinityFree</p>
+        </div>
+    </footer>
+
+    <script>
+        /* =========================
+           Loader de entrada
+        ========================== */
+        window.addEventListener("load", () => {
+            setTimeout(() => document.getElementById("loader").classList.add("is-hidden"), 650);
+        });
+
+        /* =========================
+           Cursor personalizado
+        ========================== */
+        const cursorDot = document.getElementById("cursorDot");
+        const cursorRing = document.getElementById("cursorRing");
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+        let ringX = mouseX;
+        let ringY = mouseY;
+
+        window.addEventListener("mousemove", (event) => {
+            mouseX = event.clientX;
+            mouseY = event.clientY;
+            cursorDot.style.transform = `translate(${mouseX}px, ${mouseY}px) translate(-50%, -50%)`;
+        });
+
+        const animateCursor = () => {
+            ringX += (mouseX - ringX) * 0.18;
+            ringY += (mouseY - ringY) * 0.18;
+            cursorRing.style.transform = `translate(${ringX}px, ${ringY}px) translate(-50%, -50%)`;
+            requestAnimationFrame(animateCursor);
+        };
+        animateCursor();
+
+        document.querySelectorAll("a, button, video, .tilt-card").forEach((element) => {
+            element.addEventListener("mouseenter", () => cursorRing.classList.add("is-active"));
+            element.addEventListener("mouseleave", () => cursorRing.classList.remove("is-active"));
+        });
+
+        /* =========================
+           Barra de progreso y parallax
+        ========================== */
+        const scrollProgress = document.getElementById("scrollProgress");
+        const parallaxItems = document.querySelectorAll(".parallax");
+
+        const updateScrollEffects = () => {
+            const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = maxScroll > 0 ? (window.scrollY / maxScroll) * 100 : 0;
+            scrollProgress.style.width = `${progress}%`;
+
+            parallaxItems.forEach((item) => {
+                const depth = Number(item.dataset.depth || 10);
+                item.style.transform = `translateY(${window.scrollY / depth}px)`;
+            });
+        };
+
+        window.addEventListener("scroll", updateScrollEffects, { passive: true });
+        updateScrollEffects();
+
+        /* =========================
+           Aparicion al hacer scroll
+        ========================== */
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("is-visible");
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.16 });
+
+        document.querySelectorAll(".reveal").forEach((element, index) => {
+            element.style.transitionDelay = `${Math.min(index * 65, 360)}ms`;
+            observer.observe(element);
+        });
+
+        /* =========================
+           Tilt y brillo dinamico en tarjetas
+        ========================== */
+        document.querySelectorAll(".tilt-card").forEach((card) => {
+            card.addEventListener("mousemove", (event) => {
+                const rect = card.getBoundingClientRect();
+                const x = event.clientX - rect.left;
+                const y = event.clientY - rect.top;
+                const rotateY = ((x / rect.width) - 0.5) * 8;
+                const rotateX = ((y / rect.height) - 0.5) * -8;
+                card.style.setProperty("--mx", `${x}px`);
+                card.style.setProperty("--my", `${y}px`);
+                card.style.transform = `translateY(0) perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            });
+
+            card.addEventListener("mouseleave", () => {
+                card.style.transform = "translateY(0) perspective(900px) rotateX(0deg) rotateY(0deg)";
+            });
+        });
+
+        /* =========================
+           Controles personalizados de video
+        ========================== */
+        document.querySelectorAll(".video-card").forEach((card) => {
+            const video = card.querySelector("video");
+            const playButton = card.querySelector(".play-btn");
+            const muteButton = card.querySelector(".mute-btn");
+            const resetButton = card.querySelector(".reset-btn");
+
+            playButton.addEventListener("click", async () => {
+                if (video.paused) {
+                    await video.play();
+                } else {
+                    video.pause();
+                }
+            });
+
+            muteButton.addEventListener("click", () => {
+                video.muted = !video.muted;
+                muteButton.textContent = video.muted ? "◌" : "◍";
+            });
+
+            resetButton.addEventListener("click", () => {
+                video.currentTime = 0;
+                video.play();
+            });
+
+            video.addEventListener("play", () => playButton.textContent = "Ⅱ");
+            video.addEventListener("pause", () => playButton.textContent = "▶");
+        });
+
+        /* =========================
+           Campo de particulas fisicas
+        ========================== */
+        const canvas = document.getElementById("particle-field");
+        const ctx = canvas.getContext("2d");
+        let particles = [];
+        const pointer = { x: null, y: null };
+
+        const resizeCanvas = () => {
+            canvas.width = window.innerWidth * window.devicePixelRatio;
+            canvas.height = window.innerHeight * window.devicePixelRatio;
+            canvas.style.width = `${window.innerWidth}px`;
+            canvas.style.height = `${window.innerHeight}px`;
+            ctx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
+
+            const count = Math.min(115, Math.floor(window.innerWidth / 12));
+            particles = Array.from({ length: count }, () => ({
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * window.innerHeight,
+                vx: (Math.random() - 0.5) * 0.7,
+                vy: (Math.random() - 0.5) * 0.7,
+                radius: Math.random() * 1.8 + 0.8,
+                phase: Math.random() * Math.PI * 2
+            }));
+        };
+
+        const drawParticles = () => {
+            ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+            particles.forEach((particle, index) => {
+                particle.x += particle.vx + Math.sin(Date.now() * 0.001 + particle.phase) * 0.08;
+                particle.y += particle.vy + Math.cos(Date.now() * 0.001 + particle.phase) * 0.08;
+
+                if (particle.x < -20) particle.x = window.innerWidth + 20;
+                if (particle.x > window.innerWidth + 20) particle.x = -20;
+                if (particle.y < -20) particle.y = window.innerHeight + 20;
+                if (particle.y > window.innerHeight + 20) particle.y = -20;
+
+                const gradient = ctx.createRadialGradient(particle.x, particle.y, 0, particle.x, particle.y, 14);
+                gradient.addColorStop(0, "rgba(53, 231, 255, .95)");
+                gradient.addColorStop(1, "rgba(53, 231, 255, 0)");
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, particle.radius * 5, 0, Math.PI * 2);
+                ctx.fill();
+
+                for (let j = index + 1; j < particles.length; j++) {
+                    const other = particles[j];
+                    const dx = particle.x - other.x;
+                    const dy = particle.y - other.y;
+                    const distance = Math.hypot(dx, dy);
+                    if (distance < 132) {
+                        ctx.strokeStyle = `rgba(53, 231, 255, ${0.16 * (1 - distance / 132)})`;
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(particle.x, particle.y);
+                        ctx.lineTo(other.x, other.y);
+                        ctx.stroke();
+                    }
+                }
+
+                if (pointer.x !== null) {
+                    const pdx = particle.x - pointer.x;
+                    const pdy = particle.y - pointer.y;
+                    const pointerDistance = Math.hypot(pdx, pdy);
+                    if (pointerDistance < 150) {
+                        ctx.strokeStyle = `rgba(118, 255, 214, ${0.22 * (1 - pointerDistance / 150)})`;
+                        ctx.beginPath();
+                        ctx.moveTo(particle.x, particle.y);
+                        ctx.lineTo(pointer.x, pointer.y);
+                        ctx.stroke();
+                    }
+                }
+            });
+
+            requestAnimationFrame(drawParticles);
+        };
+
+        window.addEventListener("mousemove", (event) => {
+            pointer.x = event.clientX;
+            pointer.y = event.clientY;
+        });
+
+        window.addEventListener("resize", resizeCanvas);
+        resizeCanvas();
+        drawParticles();
+    </script>
+</body>
+</html>
