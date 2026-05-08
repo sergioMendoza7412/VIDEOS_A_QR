@@ -1,8 +1,8 @@
 <?php
 // Portal cientifico futurista en un solo archivo PHP.
-// Detecta los videos aunque el servidor distinga mayusculas y minusculas.
-$video1 = file_exists(__DIR__ . '/video1.mp4') ? 'video1.mp4' : 'VIDEO1.mp4';
-$video2 = file_exists(__DIR__ . '/video2.mp4') ? 'video2.mp4' : 'VIDEO2.mp4';
+// Usa los MP4 reales desde GitHub para evitar punteros de Git LFS en Pages.
+$video1 = 'https://raw.githubusercontent.com/sergioMendoza7412/VIDEOS_A_QR/gh-pages/VIDEO1.mp4';
+$video2 = 'https://raw.githubusercontent.com/sergioMendoza7412/VIDEOS_A_QR/gh-pages/VIDEO2.mp4';
 $logoOptions = ['logo1.jpg', 'logo1.png', 'logo.png', 'logo.jpg'];
 $schoolLogo = '';
 foreach ($logoOptions as $logoFile) {
