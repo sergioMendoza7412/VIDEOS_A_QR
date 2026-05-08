@@ -1195,8 +1195,8 @@ $year = date('Y');
                     <span class="brand-mark">Q</span>
                 <?php endif; ?>
                 <span class="brand-copy">
-                    <strong>Quantum Motion Lab</strong>
-                    <span>Juana Azurduy</span>
+                    <strong>Juana Azurduy de Padilla</strong>
+                    <span>Secundaria</span>
                 </span>
             </a>
             <div class="nav-links" aria-label="Navegacion principal">
@@ -1228,13 +1228,11 @@ $year = date('Y');
                     <div class="eyebrow"><span class="pulse-dot"></span>Estudiante: ROSABEL</div>
                     <h1>Fisica del <span>movimiento</span></h1>
                     <p class="hero-copy">
-                        Una experiencia visual de alto nivel para estudiar trayectorias no uniformes,
-                        aceleracion variable, energia cinetica y modelos de movimiento con una estetica
-                        inspirada en laboratorios orbitales, hologramas y simulaciones de particulas.
+                        Videos y conceptos principales sobre movimiento curvilineo irregular y
+                        movimiento rectilineo variado.
                     </p>
                     <div class="hero-actions">
                         <a class="btn primary" href="#videos">Ver videos</a>
-                        <a class="btn" href="#teoria">Explorar conceptos</a>
                     </div>
                 </div>
 
@@ -1256,10 +1254,6 @@ $year = date('Y');
             <div class="section-head reveal">
                 <div class="section-kicker">Analisis fisico</div>
                 <h2>Dos modelos esenciales para comprender el cambio de posicion.</h2>
-                <p>
-                    El movimiento se interpreta a partir de la posicion, la velocidad y la aceleracion.
-                    Cuando estas magnitudes cambian, revelan la estructura dinamica del fenomeno.
-                </p>
             </div>
 
             <div class="topic-grid">
@@ -1328,11 +1322,7 @@ $year = date('Y');
         <section class="section" id="videos">
             <div class="section-head reveal">
                 <div class="section-kicker">Modulo audiovisual</div>
-                <h2>Videos locales integrados en un marco futurista.</h2>
-                <p>
-                    Los reproductores mantienen controles nativos para compatibilidad con hosting gratuito,
-                    y agregan controles personalizados para reproducir, pausar, silenciar y reiniciar.
-                </p>
+                <h2>Videos del proyecto.</h2>
             </div>
 
             <div class="video-grid">
@@ -1353,7 +1343,6 @@ $year = date('Y');
                             <button class="icon-btn mute-btn" type="button" aria-label="Activar o silenciar video">◌</button>
                             <button class="icon-btn reset-btn" type="button" aria-label="Reiniciar video">↺</button>
                         </div>
-                        <span class="status-pill">Autoplay silencioso disponible al iniciar</span>
                     </div>
                 </article>
 
@@ -1374,7 +1363,6 @@ $year = date('Y');
                             <button class="icon-btn mute-btn" type="button" aria-label="Activar o silenciar video">◌</button>
                             <button class="icon-btn reset-btn" type="button" aria-label="Reiniciar video">↺</button>
                         </div>
-                        <span class="status-pill">Modo laboratorio visual activo</span>
                     </div>
                 </article>
             </div>
@@ -1384,12 +1372,7 @@ $year = date('Y');
     <!-- Pie de pagina -->
     <footer class="footer">
         <div class="footer-inner">
-            <?php if ($schoolLogo !== ''): ?>
-                <span class="footer-logo-wrap">
-                    <img src="<?= htmlspecialchars($schoolLogo, ENT_QUOTES, 'UTF-8') ?>" alt="Logo del colegio">
-                </span>
-            <?php endif; ?>
-            <p><strong>Quantum Motion Lab</strong> © <?= $year ?> · Juana Azurduy de Padilla Secundaria · Proyecto de fisica para InfinityFree</p>
+            <p>Juana Azurduy de Padilla Secundaria</p>
         </div>
     </footer>
 
